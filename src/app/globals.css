@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles */
+:root {
+    --radius: 12px;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background: theme('colors.white');
+    color: theme('colors.slate.900');
+}
+
+.container-prose {
+    @apply max-w-none space-y-4 leading-relaxed text-slate-700;
+}
+
+.container-prose h1 {
+    @apply mb-4 text-3xl font-semibold text-slate-900 md:text-4xl;
+}
+
+.btn-primary {
+    @apply inline-flex items-center gap-2 rounded-full bg-brand-accent px-5 py-2 text-white shadow-md transition hover:-translate-y-0.5 hover:bg-rose-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-rose-500/50;
+}
+
+.nav-link {
+    @apply text-sm md:text-base font-medium text-slate-700 hover:text-slate-950 transition;
+}
+
+/* Custom color alias matching Tailwind extended palette in tailwind.config.ts */
+@layer utilities {
+    .bg-brand-accent { @apply bg-rose-600; }
+    .text-brand-accent { @apply text-rose-600; }
+}
+
