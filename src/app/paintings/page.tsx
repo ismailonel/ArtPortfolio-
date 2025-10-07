@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import LazyImage from '@/components/LazyImage';
-import { useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 
@@ -85,7 +85,7 @@ const categories = {
     }
 };
 
-export default function PaintingsPage() {
+function PaintingsContent() {
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get('category') as Category;
     const [activeCategory, setActiveCategory] = useState<Category>(
@@ -95,19 +95,19 @@ export default function PaintingsPage() {
 
     const currentImages = categories[activeCategory].images;
 
-    const goPrev = () => {
+    const goPrev = useCallback(() => {
         if (activeImage === null) return;
         const currentCategoryImages = categories[activeImage.category].images;
         const prevIndex = (activeImage.index + currentCategoryImages.length - 1) % currentCategoryImages.length;
         setActiveImage({category: activeImage.category, index: prevIndex});
-    };
+    }, [activeImage]);
 
-    const goNext = () => {
+    const goNext = useCallback(() => {
         if (activeImage === null) return;
         const currentCategoryImages = categories[activeImage.category].images;
         const nextIndex = (activeImage.index + 1) % currentCategoryImages.length;
         setActiveImage({category: activeImage.category, index: nextIndex});
-    };
+    }, [activeImage]);
 
     // Update category when URL parameter changes
     useEffect(() => {
@@ -126,61 +126,59 @@ export default function PaintingsPage() {
         };
         document.addEventListener('keydown', onKey);
         return () => document.removeEventListener('keydown', onKey);
-    }, [activeImage]);
+    }, [activeImage, goPrev, goNext]);
 
     return (
         <>
-            <Navbar />
-            <main className="container py-10 md:py-14">
-                <h1 className="mb-6 text-3xl font-semibold md:text-4xl">Paintings</h1>
-                <p className="mb-10 max-w-2xl text-slate-600">
-                    A selection of recent paintings organized by category. Tap any image to view larger.
-                </p>
-                
-                {/* Category Tabs */}
-                <div className="mb-8 flex flex-wrap gap-2">
-                    {Object.entries(categories).map(([key, category]) => (
-                        <button
-                            key={key}
-                            onClick={() => setActiveCategory(key as Category)}
-                            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                                activeCategory === key
-                                    ? 'bg-rose-600 text-white'
-                                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                            }`}
-                        >
-                            {category.title}
-                        </button>
-                    ))}
-                </div>
+            <h1 className="mb-6 text-3xl font-semibold md:text-4xl">Paintings</h1>
+            <p className="mb-10 max-w-2xl text-slate-600">
+                A selection of recent paintings organized by category. Tap any image to view larger.
+            </p>
+            
+            {/* Category Tabs */}
+            <div className="mb-8 flex flex-wrap gap-2">
+                {Object.entries(categories).map(([key, category]) => (
+                    <button
+                        key={key}
+                        onClick={() => setActiveCategory(key as Category)}
+                        className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                            activeCategory === key
+                                ? 'bg-rose-600 text-white'
+                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                    >
+                        {category.title}
+                    </button>
+                ))}
+            </div>
 
-                {/* Category Title */}
-                <h2 className="mb-6 text-2xl font-semibold">{categories[activeCategory].title}</h2>
+            {/* Category Title */}
+            <h2 className="mb-6 text-2xl font-semibold">{categories[activeCategory].title}</h2>
 
-                {/* Images Grid */}
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4">
-                    {currentImages.map((img, idx) => (
-                        <button
-                            key={`${activeCategory}-${idx}`}
-                            onClick={() => setActiveImage({category: activeCategory, index: idx})}
-                            className="group relative overflow-hidden rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/50"
+            {/* Images Grid */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4">
+                {currentImages.map((img, idx) => (
+                    <button
+                        key={`${activeCategory}-${idx}`}
+                        onClick={() => setActiveImage({category: activeCategory, index: idx})}
+                        className="group relative overflow-hidden rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/50"
+                    >
+                        <span
+                            className={`absolute left-2 top-2 z-10 rounded-full px-2.5 py-1 text-xs font-semibold shadow ${img.status === 'sold' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}
                         >
-                            <span
-                                className={`absolute left-2 top-2 z-10 rounded-full px-2.5 py-1 text-xs font-semibold shadow ${img.status === 'sold' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}
-                            >
-                                {img.status === 'sold' ? 'Sold' : 'Available'}
-                            </span>
-                            <LazyImage
-                                src={img.thumb}
-                                alt={img.alt}
-                                width={600}
-                                height={600}
-                                className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                            />
-                        </button>
-                    ))}
-                </div>
+                            {img.status === 'sold' ? 'Sold' : 'Available'}
+                        </span>
+                        <LazyImage
+                            src={img.thumb}
+                            alt={img.alt}
+                            width={600}
+                            height={600}
+                            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                        />
+                    </button>
+                ))}
+            </div>
 
             <AnimatePresence>
                 {activeImage !== null && (
@@ -263,6 +261,18 @@ export default function PaintingsPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
+        </>
+    );
+}
+
+export default function PaintingsPage() {
+    return (
+        <>
+            <Navbar />
+            <main className="container py-10 md:py-14">
+                <Suspense fallback={<div className="py-10">Loading…</div>}>
+                    <PaintingsContent />
+                </Suspense>
             </main>
             <Footer />
         </>
