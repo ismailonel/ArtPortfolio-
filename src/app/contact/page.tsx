@@ -5,14 +5,15 @@ import Footer from '@/components/Footer';
 import { useEffect, useRef, useState } from 'react';
 import { useInquiry } from '@/components/InquiryContext';
 import { useI18n } from '@/components/I18nContext';
-import HCaptcha from '@hcaptcha/react-hcaptcha';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 export default function ContactPage() {
     const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
     const { inquiry, clearInquiry } = useInquiry();
     const { t } = useI18n();
     const formRef = useRef<HTMLFormElement | null>(null);
-    const hcaptchaRef = useRef<any>(null);
+    const recaptchaRef = useRef<ReCAPTCHA | null>(null);
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
     const FORMSPARK_FORM_ID = process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID;
     // Fallbacks only in development to ease local testing; prod must use envs
@@ -20,7 +21,7 @@ export default function ContactPage() {
     const formsparkAction = FORMSPARK_FORM_ID
         ? (FORMSPARK_FORM_ID.startsWith('http') ? FORMSPARK_FORM_ID : `https://submit-form.com/${FORMSPARK_FORM_ID}`)
         : (isDev ? 'https://submit-form.com/FqnSFus0g' : '');
-    const HCAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || (isDev ? '877e3a7c-8834-489c-8e64-c30cd0d2b83a' : '');
+    const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || (isDev ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : '');
 
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const initialFullUrl = inquiry.imageUrl
@@ -43,16 +44,15 @@ export default function ContactPage() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        if (!formsparkAction || !HCAPTCHA_SITE_KEY) {
+        if (!formsparkAction || !RECAPTCHA_SITE_KEY) {
             setStatus('error');
             return;
         }
         setStatus('submitting');
         try {
-            const token = await hcaptchaRef.current?.execute({ async: true });
-            if (!token || !formRef.current) throw new Error('hcaptcha');
+            if (!recaptchaToken || !formRef.current) throw new Error('recaptcha');
             const fd = new FormData(formRef.current);
-            fd.append('h-captcha-response', token);
+            fd.append('g-recaptcha-response', recaptchaToken);
             const res = await fetch(formsparkAction, {
                 method: 'POST',
                 body: fd,
@@ -62,7 +62,7 @@ export default function ContactPage() {
         } catch {
             setStatus('error');
         } finally {
-            try { hcaptchaRef.current?.resetCaptcha(); } catch {}
+            try { recaptchaRef.current?.reset(); setRecaptchaToken(null); } catch {}
         }
     }
 
@@ -118,12 +118,11 @@ export default function ContactPage() {
                             defaultValue={inquiry.imageUrl ? t('contact.prefilled') : undefined}
                         />
                     </div>
-                    {HCAPTCHA_SITE_KEY ? (
-                        <HCaptcha
-                            sitekey={HCAPTCHA_SITE_KEY}
-                            size="normal"
-                            ref={hcaptchaRef}
-                            onError={() => setStatus('error')}
+                    {RECAPTCHA_SITE_KEY ? (
+                        <ReCAPTCHA
+                            sitekey={RECAPTCHA_SITE_KEY}
+                            onChange={(val: string | null) => setRecaptchaToken(val)}
+                            ref={recaptchaRef}
                         />
                     ) : null}
                     <input type="text" name="_gotcha" className="hidden" />
