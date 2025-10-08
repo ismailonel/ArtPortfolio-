@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import LazyImage from '@/components/LazyImage';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useInquiry } from '@/components/InquiryContext';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -40,8 +40,14 @@ export default function DrawingsPage() {
     const { setInquiry } = useInquiry();
     const { t } = useI18n();
 
-    const goPrev = () => setActive((idx) => (idx === null ? null : (idx + images.length - 1) % images.length));
-    const goNext = () => setActive((idx) => (idx === null ? null : (idx + 1) % images.length));
+    const sortedImages = useMemo(() => {
+        return [...images].sort((a, b) => (
+            (a.status === 'sold' ? 1 : 0) - (b.status === 'sold' ? 1 : 0)
+        ));
+    }, []);
+
+    const goPrev = () => setActive((idx) => (idx === null ? null : (idx + sortedImages.length - 1) % sortedImages.length));
+    const goNext = () => setActive((idx) => (idx === null ? null : (idx + 1) % sortedImages.length));
 
     // Keyboard navigation
     useEffect(() => {
@@ -62,7 +68,7 @@ export default function DrawingsPage() {
                 <h1 className="mb-6 text-3xl font-semibold md:text-4xl">{t('drawings.title')}</h1>
                 <p className="mb-10 max-w-2xl text-slate-600">{t('drawings.subtitle')}</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4">
-                {images.map((img, idx) => (
+                {sortedImages.map((img, idx) => (
                     <button
                         key={`drawing-${idx}`}
                         onClick={() => setActive(idx)}
@@ -132,8 +138,8 @@ export default function DrawingsPage() {
                             </button>
                             {active !== null && (
                                 <Image
-                                    src={images[active].full}
-                                    alt={images[active].alt}
+                                    src={sortedImages[active].full}
+                                    alt={sortedImages[active].alt}
                                     width={1600}
                                     height={1200}
                                     className="max-h-[80vh] h-auto w-full rounded-xl object-contain"
@@ -143,13 +149,13 @@ export default function DrawingsPage() {
                             )}
                             {active !== null && (
                                 <div className="mt-2 flex items-center justify-between px-2">
-                                    <div className="text-sm font-medium text-slate-800">{images[active].title}</div>
+                                    <div className="text-sm font-medium text-slate-800">{sortedImages[active].title}</div>
                                     <div className="flex items-center gap-2">
-                                        {images[active].status !== 'sold' && (
+                                        {sortedImages[active].status !== 'sold' && (
                                             <button
                                                 className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-white hover:bg-slate-900"
                                                 onClick={() => {
-                                                    const img = images[active];
+                                                    const img = sortedImages[active];
                                                     setInquiry({ imageUrl: img.full });
                                                     router.push('/contact');
                                                 }}
@@ -158,9 +164,9 @@ export default function DrawingsPage() {
                                             </button>
                                         )}
                                         <span
-                                            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${images[active].status === 'sold' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}
+                                            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${sortedImages[active].status === 'sold' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}
                                         >
-                                            {images[active].status === 'sold' ? t('drawings.sold') : images[active].price ? t('drawings.availableWithPrice', { price: images[active].price }) : t('drawings.available')}
+                                            {sortedImages[active].status === 'sold' ? t('drawings.sold') : sortedImages[active].price ? t('drawings.availableWithPrice', { price: sortedImages[active].price }) : t('drawings.available')}
                                         </span>
                                     </div>
                                 </div>

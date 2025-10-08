@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import LazyImage from '@/components/LazyImage';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInquiry } from '@/components/InquiryContext';
@@ -98,21 +98,29 @@ function PaintingsContent() {
     );
     const [activeImage, setActiveImage] = useState<{category: Category, index: number} | null>(null);
 
+    const getSortedImages = useCallback((cat: Category) => {
+        const imgs = categories[cat].images;
+        return [...imgs].sort((a, b) => (
+            (a.status === 'sold' ? 1 : 0) - (b.status === 'sold' ? 1 : 0)
+        ));
+    }, []);
+
     const currentImages = categories[activeCategory].images;
+    const currentSortedImages = useMemo(() => getSortedImages(activeCategory), [getSortedImages, activeCategory]);
 
     const goPrev = useCallback(() => {
         if (activeImage === null) return;
-        const currentCategoryImages = categories[activeImage.category].images;
+        const currentCategoryImages = getSortedImages(activeImage.category);
         const prevIndex = (activeImage.index + currentCategoryImages.length - 1) % currentCategoryImages.length;
         setActiveImage({category: activeImage.category, index: prevIndex});
-    }, [activeImage]);
+    }, [activeImage, getSortedImages]);
 
     const goNext = useCallback(() => {
         if (activeImage === null) return;
-        const currentCategoryImages = categories[activeImage.category].images;
+        const currentCategoryImages = getSortedImages(activeImage.category);
         const nextIndex = (activeImage.index + 1) % currentCategoryImages.length;
         setActiveImage({category: activeImage.category, index: nextIndex});
-    }, [activeImage]);
+    }, [activeImage, getSortedImages]);
 
     // Update category when URL parameter changes
     useEffect(() => {
@@ -160,7 +168,7 @@ function PaintingsContent() {
 
             {/* Images Grid */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4">
-                {currentImages.map((img, idx) => (
+                {currentSortedImages.map((img, idx) => (
                     <button
                         key={`${activeCategory}-${idx}`}
                         onClick={() => setActiveImage({category: activeCategory, index: idx})}
@@ -230,8 +238,8 @@ function PaintingsContent() {
                             </button>
                             {activeImage !== null && (
                                 <Image
-                                    src={categories[activeImage.category].images[activeImage.index].full}
-                                    alt={categories[activeImage.category].images[activeImage.index].alt}
+                                    src={getSortedImages(activeImage.category)[activeImage.index].full}
+                                    alt={getSortedImages(activeImage.category)[activeImage.index].alt}
                                     width={1600}
                                     height={1200}
                                     className="max-h-[80vh] h-auto w-full rounded-xl object-contain"
@@ -242,14 +250,14 @@ function PaintingsContent() {
                             {activeImage !== null && (
                                 <div className="mt-2 flex items-center justify-between px-2">
                                     <div className="text-sm font-medium text-slate-800">
-                                        {categories[activeImage.category].images[activeImage.index].title}
+                                        {getSortedImages(activeImage.category)[activeImage.index].title}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        {categories[activeImage.category].images[activeImage.index].status !== 'sold' && (
+                                        {getSortedImages(activeImage.category)[activeImage.index].status !== 'sold' && (
                                             <button
                                                 className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-white hover:bg-slate-900"
                                                 onClick={() => {
-                                                    const img = categories[activeImage.category].images[activeImage.index];
+                                                    const img = getSortedImages(activeImage.category)[activeImage.index];
                                                     setInquiry({ imageUrl: img.full });
                                                     router.push('/contact');
                                                 }}
@@ -259,15 +267,15 @@ function PaintingsContent() {
                                         )}
                                         <span
                                             className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                                categories[activeImage.category].images[activeImage.index].status === 'sold' 
+                                                getSortedImages(activeImage.category)[activeImage.index].status === 'sold' 
                                                     ? 'bg-rose-600 text-white' 
                                                     : 'bg-emerald-600 text-white'
                                             }`}
                                         >
-                                            {categories[activeImage.category].images[activeImage.index].status === 'sold' 
+                                            {getSortedImages(activeImage.category)[activeImage.index].status === 'sold' 
                                                 ? t('paintings.sold') 
-                                                : categories[activeImage.category].images[activeImage.index].price 
-                                                    ? t('paintings.availableWithPrice', { price: categories[activeImage.category].images[activeImage.index].price as string }) 
+                                                : getSortedImages(activeImage.category)[activeImage.index].price 
+                                                    ? t('paintings.availableWithPrice', { price: getSortedImages(activeImage.category)[activeImage.index].price as string }) 
                                                     : t('paintings.available')
                                             }
                                         </span>
