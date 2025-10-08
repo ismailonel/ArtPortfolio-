@@ -21,6 +21,7 @@ export default function ContactPage() {
     const formsparkAction = FORMSPARK_FORM_ID
         ? (FORMSPARK_FORM_ID.startsWith('http') ? FORMSPARK_FORM_ID : `https://submit-form.com/${FORMSPARK_FORM_ID}`)
         : (isDev ? 'https://submit-form.com/FqnSFus0g' : '');
+    const internalAction = '/api/contact';
     const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || (isDev ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : '');
 
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -44,16 +45,18 @@ export default function ContactPage() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        if (!formsparkAction || !RECAPTCHA_SITE_KEY) {
+        if (!formsparkAction) {
             setStatus('error');
             return;
         }
         setStatus('submitting');
         try {
-            if (!recaptchaToken || !formRef.current) throw new Error('recaptcha');
-            const fd = new FormData(formRef.current);
-            fd.set('g-recaptcha-response', recaptchaToken);
-            const res = await fetch(formsparkAction, {
+            if (!formRef.current) throw new Error('form');
+                const fd = new FormData(formRef.current);
+                if (recaptchaToken) {
+                    fd.set('g-recaptcha-response', recaptchaToken);
+                }
+            const res = await fetch(internalAction, {
                 method: 'POST',
                 headers: { 'Accept': 'application/json' },
                 body: fd
@@ -67,7 +70,7 @@ export default function ContactPage() {
             if (!res.ok) {
                 try { console.error('Formspark error', await res.text()); } catch {}
             }
-        } catch {
+        } catch (err) {
             setStatus('error');
         } finally {
             try { recaptchaRef.current?.reset(); setRecaptchaToken(null); } catch {}
@@ -81,7 +84,7 @@ export default function ContactPage() {
                 <h1 className="mb-6 text-3xl font-semibold md:text-4xl">{t('contact.title')}</h1>
                 <p className="mb-8 max-w-2xl text-slate-600">{t('contact.subtitle')}</p>
                 <form
-                    action={formsparkAction || undefined}
+                    action={internalAction}
                     method="POST"
                     className="max-w-xl space-y-4"
                     ref={formRef}
