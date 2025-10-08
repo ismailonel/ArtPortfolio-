@@ -52,13 +52,21 @@ export default function ContactPage() {
         try {
             if (!recaptchaToken || !formRef.current) throw new Error('recaptcha');
             const fd = new FormData(formRef.current);
-            fd.append('g-recaptcha-response', recaptchaToken);
+            fd.set('g-recaptcha-response', recaptchaToken);
             const res = await fetch(formsparkAction, {
                 method: 'POST',
-                body: fd,
-                headers: { 'Accept': 'application/json' }
+                headers: { 'Accept': 'application/json' },
+                body: fd
             });
-            setStatus(res.ok ? 'success' : 'error');
+            if (res.ok) {
+                setStatus('success');
+                try { formRef.current.reset(); } catch {}
+            } else {
+                setStatus('error');
+            }
+            if (!res.ok) {
+                try { console.error('Formspark error', await res.text()); } catch {}
+            }
         } catch {
             setStatus('error');
         } finally {
@@ -126,10 +134,16 @@ export default function ContactPage() {
                         />
                     ) : null}
                     <input type="text" name="_gotcha" className="hidden" />
-                    <button className="btn-primary" type="submit" disabled={status === 'submitting'}>
-                        {status === 'submitting' ? t('contact.form.sending') : t('contact.form.send')}
+                    <button className="btn-primary" type="submit" disabled={status === 'submitting' || status === 'success'}>
+                        {status === 'submitting' ? t('contact.form.sending') : (status === 'success' ? 'Sent' : t('contact.form.send'))}
                     </button>
                 </form>
+                {status === 'success' && (
+                    <p className="mt-4 text-sm text-emerald-600">Message sent successfully. Thank you!</p>
+                )}
+                {status === 'error' && (
+                    <p className="mt-4 text-sm text-rose-600">There was a problem sending your message. Please try again.</p>
+                )}
                 <p className="mt-4 text-sm text-slate-500">{t('contact.formspreeNote')}</p>
             </main>
             <Footer />
