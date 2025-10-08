@@ -58,10 +58,11 @@
             "email": "Correo electrónico",
             "message": "Mensaje",
             "send": "Enviar mensaje",
-            "sending": "Enviando…"
+            "sending": "Enviando…",
+            "success": "Mensaje enviado exitosamente. ¡Gracias!",
+            "error": "Hubo un problema al enviar su mensaje. Por favor, inténtelo de nuevo."
         },
         "artworkLink": "Enlace de la obra:",
-        "formspreeNote": "Reemplace la acción del formulario con su endpoint de Formspree (p. ej., https://formspree.io/f/abcde).",
         "prefilled": "Por favor, proporcione más información sobre esta pintura."
     },
     "about": {

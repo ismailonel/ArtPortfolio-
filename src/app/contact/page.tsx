@@ -32,6 +32,9 @@ export default function ContactPage() {
     const [displayedImageUrl, setDisplayedImageUrl] = useState<string | null>(null);
 
     const prefilledMessage = t('contact.prefilled');
+    const messageWithArtwork = inquiry.imageUrl 
+        ? `${prefilledMessage}\n\n${t('contact.artworkLink')} ${initialFullUrl}`
+        : undefined;
 
     useEffect(() => {
         setDisplayedImageUrl(initialFullUrl);
@@ -110,14 +113,6 @@ export default function ContactPage() {
                             className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-500/40"
                         />
                     </div>
-                    {displayedImageUrl && (
-                        <div className="text-sm">
-                            <span className="text-slate-600 mr-1">{t('contact.artworkLink')}</span>
-                            <a href={displayedImageUrl} target="_blank" rel="noreferrer" className="text-rose-600 underline break-all">
-                                {displayedImageUrl}
-                            </a>
-                        </div>
-                    )}
                     <div>
                         <label htmlFor="message" className="mb-1 block text-sm font-medium text-slate-700">{t('contact.form.message')}</label>
                         <textarea
@@ -126,7 +121,7 @@ export default function ContactPage() {
                             rows={6}
                             required
                             className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-500/40"
-                            defaultValue={inquiry.imageUrl ? t('contact.prefilled') : undefined}
+                            defaultValue={messageWithArtwork}
                         />
                     </div>
                     {RECAPTCHA_SITE_KEY ? (
@@ -142,12 +137,11 @@ export default function ContactPage() {
                     </button>
                 </form>
                 {status === 'success' && (
-                    <p className="mt-4 text-sm text-emerald-600">Message sent successfully. Thank you!</p>
+                    <p className="mt-4 text-sm text-emerald-600">{t('contact.form.success')}</p>
                 )}
                 {status === 'error' && (
-                    <p className="mt-4 text-sm text-rose-600">There was a problem sending your message. Please try again.</p>
+                    <p className="mt-4 text-sm text-rose-600">{t('contact.form.error')}</p>
                 )}
-                <p className="mt-4 text-sm text-slate-500">{t('contact.formspreeNote')}</p>
             </main>
             <Footer />
         </>

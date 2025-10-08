@@ -58,10 +58,11 @@
             "email": "E-posta",
             "message": "Mesaj",
             "send": "Mesajı Gönder",
-            "sending": "Gönderiliyor…"
+            "sending": "Gönderiliyor…",
+            "success": "Mesajınız başarıyla gönderildi. Teşekkürler!",
+            "error": "Mesajınız gönderilirken bir sorun oluştu. Lütfen tekrar deneyin."
         },
         "artworkLink": "Eser bağlantısı:",
-        "formspreeNote": "Form eylemini Formspree uç noktanızla değiştirin (örn. https://formspree.io/f/abcde).",
         "prefilled": "Lütfen bu resim hakkında daha fazla bilgi verin."
     },
     "about": {
