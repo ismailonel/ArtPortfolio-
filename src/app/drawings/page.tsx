@@ -5,6 +5,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import LazyImage from '@/components/LazyImage';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useInquiry } from '@/components/InquiryContext';
 import { AnimatePresence, motion } from 'framer-motion';
 
 type SaleStatus = 'available' | 'sold';
@@ -33,6 +35,8 @@ const images: GalleryItem[] = Array.from({ length: 12 }).map((_, i) => {
 
 export default function DrawingsPage() {
     const [active, setActive] = useState<number | null>(null);
+    const router = useRouter();
+    const { setInquiry } = useInquiry();
 
     const goPrev = () => setActive((idx) => (idx === null ? null : (idx + images.length - 1) % images.length));
     const goNext = () => setActive((idx) => (idx === null ? null : (idx + 1) % images.length));
@@ -140,11 +144,25 @@ export default function DrawingsPage() {
                             {active !== null && (
                                 <div className="mt-2 flex items-center justify-between px-2">
                                     <div className="text-sm font-medium text-slate-800">{images[active].title}</div>
-                                    <span
-                                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${images[active].status === 'sold' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}
-                                    >
-                                        {images[active].status === 'sold' ? 'Sold' : images[active].price ? `Available · ${images[active].price}` : 'Available'}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        {images[active].status !== 'sold' && (
+                                            <button
+                                                className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-white hover:bg-slate-900"
+                                                onClick={() => {
+                                                    const img = images[active];
+                                                    setInquiry({ imageUrl: img.full });
+                                                    router.push('/contact');
+                                                }}
+                                            >
+                                                Inquire
+                                            </button>
+                                        )}
+                                        <span
+                                            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${images[active].status === 'sold' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}
+                                        >
+                                            {images[active].status === 'sold' ? 'Sold' : images[active].price ? `Available · ${images[active].price}` : 'Available'}
+                                        </span>
+                                    </div>
                                 </div>
                             )}
                         </motion.div>

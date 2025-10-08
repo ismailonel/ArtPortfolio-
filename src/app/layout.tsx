@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
 import '@/app/globals.css';
+import { InquiryProvider } from '@/components/InquiryContext';
 
 export const metadata: Metadata = {
     title: {
@@ -31,7 +32,9 @@ export default function RootLayout({
     return (
         <html lang="en" className="scroll-smooth">
             <body className={`${inter.className} bg-white text-slate-900 antialiased`}>
-                {children}
+                <InquiryProvider>
+                    {children}
+                </InquiryProvider>
             </body>
         </html>
     );

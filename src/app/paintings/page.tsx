@@ -6,7 +6,8 @@ import Footer from '@/components/Footer';
 import LazyImage from '@/components/LazyImage';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useInquiry } from '@/components/InquiryContext';
 
 type SaleStatus = 'available' | 'sold';
 
@@ -87,6 +88,8 @@ const categories = {
 
 function PaintingsContent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const { setInquiry } = useInquiry();
     const categoryParam = searchParams.get('category') as Category;
     const [activeCategory, setActiveCategory] = useState<Category>(
         categoryParam && Object.keys(categories).includes(categoryParam) ? categoryParam : 'portraits'
@@ -241,20 +244,34 @@ function PaintingsContent() {
                                     <div className="text-sm font-medium text-slate-800">
                                         {categories[activeImage.category].images[activeImage.index].title}
                                     </div>
-                                    <span
-                                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                            categories[activeImage.category].images[activeImage.index].status === 'sold' 
-                                                ? 'bg-rose-600 text-white' 
-                                                : 'bg-emerald-600 text-white'
-                                        }`}
-                                    >
-                                        {categories[activeImage.category].images[activeImage.index].status === 'sold' 
-                                            ? 'Sold' 
-                                            : categories[activeImage.category].images[activeImage.index].price 
-                                                ? `Available · ${categories[activeImage.category].images[activeImage.index].price}` 
-                                                : 'Available'
-                                        }
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        {categories[activeImage.category].images[activeImage.index].status !== 'sold' && (
+                                            <button
+                                                className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-white hover:bg-slate-900"
+                                                onClick={() => {
+                                                    const img = categories[activeImage.category].images[activeImage.index];
+                                                    setInquiry({ imageUrl: img.full });
+                                                    router.push('/contact');
+                                                }}
+                                            >
+                                                Inquire
+                                            </button>
+                                        )}
+                                        <span
+                                            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                                categories[activeImage.category].images[activeImage.index].status === 'sold' 
+                                                    ? 'bg-rose-600 text-white' 
+                                                    : 'bg-emerald-600 text-white'
+                                            }`}
+                                        >
+                                            {categories[activeImage.category].images[activeImage.index].status === 'sold' 
+                                                ? 'Sold' 
+                                                : categories[activeImage.category].images[activeImage.index].price 
+                                                    ? `Available · ${categories[activeImage.category].images[activeImage.index].price}` 
+                                                    : 'Available'
+                                            }
+                                        </span>
+                                    </div>
                                 </div>
                             )}
                         </motion.div>

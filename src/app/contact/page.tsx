@@ -2,10 +2,31 @@
 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useInquiry } from '@/components/InquiryContext';
 
 export default function ContactPage() {
     const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+    const { inquiry, clearInquiry } = useInquiry();
+
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const initialFullUrl = inquiry.imageUrl
+        ? (inquiry.imageUrl.startsWith('http') ? inquiry.imageUrl : `${origin}${inquiry.imageUrl}`)
+        : null;
+
+    const [displayedImageUrl, setDisplayedImageUrl] = useState<string | null>(null);
+
+    const prefilledMessage = 'Please give me more information about this painting.';
+
+    useEffect(() => {
+        setDisplayedImageUrl(initialFullUrl);
+        if (inquiry.imageUrl) {
+            const t = setTimeout(() => clearInquiry(), 0);
+            return () => clearTimeout(t);
+        }
+    // We intentionally capture initialFullUrl once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <>
@@ -46,6 +67,14 @@ export default function ContactPage() {
                             className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-500/40"
                         />
                     </div>
+                    {displayedImageUrl && (
+                        <div className="text-sm">
+                            <span className="text-slate-600 mr-1">Artwork link:</span>
+                            <a href={displayedImageUrl} target="_blank" rel="noreferrer" className="text-rose-600 underline break-all">
+                                {displayedImageUrl}
+                            </a>
+                        </div>
+                    )}
                     <div>
                         <label htmlFor="message" className="mb-1 block text-sm font-medium text-slate-700">
                             Message
@@ -56,6 +85,7 @@ export default function ContactPage() {
                             rows={6}
                             required
                             className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-500/40"
+                            defaultValue={inquiry.imageUrl ? 'Please give me more information about this painting.' : undefined}
                         />
                     </div>
                     <input type="text" name="_gotcha" className="hidden" />
