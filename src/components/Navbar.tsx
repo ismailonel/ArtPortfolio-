@@ -24,8 +24,8 @@ export default function Navbar() {
         <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur">
             <div className="container mx-auto flex items-center justify-between py-4">
                 <Link href="/" className="text-xl font-semibold tracking-tight">
-                    <span className="text-slate-900">{t('nav.brand1')}</span>
-                    <span className="text-brand-accent">{t('nav.brand2')}</span>
+                    <span className="text-slate-900 text-[1.4em]">{t('nav.brand1')}</span>
+                    <span className="text-brand-accent text-[1.4em]">{t('nav.brand2')}</span>
                 </Link>
 
                 <div className="hidden gap-8 md:flex">
