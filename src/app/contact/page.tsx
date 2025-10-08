@@ -4,10 +4,12 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useEffect, useState } from 'react';
 import { useInquiry } from '@/components/InquiryContext';
+import { useI18n } from '@/components/I18nContext';
 
 export default function ContactPage() {
     const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
     const { inquiry, clearInquiry } = useInquiry();
+    const { t } = useI18n();
 
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const initialFullUrl = inquiry.imageUrl
@@ -16,7 +18,7 @@ export default function ContactPage() {
 
     const [displayedImageUrl, setDisplayedImageUrl] = useState<string | null>(null);
 
-    const prefilledMessage = 'Please give me more information about this painting.';
+    const prefilledMessage = t('contact.prefilled');
 
     useEffect(() => {
         setDisplayedImageUrl(initialFullUrl);
@@ -32,11 +34,8 @@ export default function ContactPage() {
         <>
             <Navbar />
             <main className="container py-10 md:py-14">
-                <h1 className="mb-6 text-3xl font-semibold md:text-4xl">Contact</h1>
-                <p className="mb-8 max-w-2xl text-slate-600">
-                    For inquiries, commissions, or collaboration, send a message using the form
-                    below. I will get back to you soon.
-                </p>
+                <h1 className="mb-6 text-3xl font-semibold md:text-4xl">{t('contact.title')}</h1>
+                <p className="mb-8 max-w-2xl text-slate-600">{t('contact.subtitle')}</p>
                 <form
                     action="https://formspree.io/f/yourFormId"
                     method="POST"
@@ -44,9 +43,7 @@ export default function ContactPage() {
                     onSubmit={() => setStatus('submitting')}
                 >
                     <div>
-                        <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700">
-                            Name
-                        </label>
+                        <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700">{t('contact.form.name')}</label>
                         <input
                             id="name"
                             name="name"
@@ -56,9 +53,7 @@ export default function ContactPage() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
-                            Email
-                        </label>
+                        <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">{t('contact.form.email')}</label>
                         <input
                             id="email"
                             name="email"
@@ -69,33 +64,29 @@ export default function ContactPage() {
                     </div>
                     {displayedImageUrl && (
                         <div className="text-sm">
-                            <span className="text-slate-600 mr-1">Artwork link:</span>
+                            <span className="text-slate-600 mr-1">{t('contact.artworkLink')}</span>
                             <a href={displayedImageUrl} target="_blank" rel="noreferrer" className="text-rose-600 underline break-all">
                                 {displayedImageUrl}
                             </a>
                         </div>
                     )}
                     <div>
-                        <label htmlFor="message" className="mb-1 block text-sm font-medium text-slate-700">
-                            Message
-                        </label>
+                        <label htmlFor="message" className="mb-1 block text-sm font-medium text-slate-700">{t('contact.form.message')}</label>
                         <textarea
                             id="message"
                             name="message"
                             rows={6}
                             required
                             className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-500/40"
-                            defaultValue={inquiry.imageUrl ? 'Please give me more information about this painting.' : undefined}
+                            defaultValue={inquiry.imageUrl ? t('contact.prefilled') : undefined}
                         />
                     </div>
                     <input type="text" name="_gotcha" className="hidden" />
                     <button className="btn-primary" type="submit" disabled={status === 'submitting'}>
-                        {status === 'submitting' ? 'Sending…' : 'Send Message'}
+                        {status === 'submitting' ? t('contact.form.sending') : t('contact.form.send')}
                     </button>
                 </form>
-                <p className="mt-4 text-sm text-slate-500">
-                    Replace the form action with your Formspree endpoint (e.g. https://formspree.io/f/abcde).
-                </p>
+                <p className="mt-4 text-sm text-slate-500">{t('contact.formspreeNote')}</p>
             </main>
             <Footer />
         </>

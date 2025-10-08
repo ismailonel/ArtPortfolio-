@@ -5,8 +5,10 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/components/I18nContext';
 
 export default function HomePage() {
+    const { t } = useI18n();
     return (
         <>
             <Navbar />
@@ -18,25 +20,23 @@ export default function HomePage() {
                         transition={{ duration: 0.5 }}
                         className="mx-auto max-w-2xl text-4xl font-semibold leading-tight tracking-tight text-slate-900 md:text-6xl"
                     >
-                        Painter & Visual Storyteller
+                        {t('home.title')}
                     </motion.h1>
-                    <p className="mx-auto max-w-2xl text-slate-600 md:text-lg">
-                        Exploring color, texture, and emotion through contemporary paintings and sketches.
-                    </p>
+                    <p className="mx-auto max-w-2xl text-slate-600 md:text-lg">{t('home.subtitle')}</p>
                     <div className="flex gap-4">
                         <Link className="btn-primary" href="/drawings">
-                            View Portfolio
+                            {t('home.viewPortfolio')}
                         </Link>
                         <Link className="nav-link inline-flex items-center rounded-full border border-slate-300 px-5 py-2" href="/contact">
-                            Contact
+                            {t('home.contact')}
                         </Link>
                     </div>
                     <div className="flex justify-center">
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 max-w-3xl">
                         {[
-                            { src: 'featured-1.svg', category: 'portraits', title: 'Portraits' },
-                            { src: 'featured-2.svg', category: 'still-life', title: 'Still Life' },
-                            { src: 'featured-3.svg', category: 'landscape', title: 'Landscape' }
+                            { src: 'featured-1.svg', category: 'portraits', title: t('home.featured.portraits') },
+                            { src: 'featured-2.svg', category: 'still-life', title: t('home.featured.stillLife') },
+                            { src: 'featured-3.svg', category: 'landscape', title: t('home.featured.landscape') }
                         ].map((item, i) => (
                             <motion.div
                                 key={item.src}
@@ -49,7 +49,7 @@ export default function HomePage() {
                                     <div className="relative">
                                         <Image
                                             src={`/images/${item.src}`}
-                                            alt={`Featured ${item.title.toLowerCase()} artwork ${i + 1}`}
+                                            alt={`Featured ${String(item.title).toLowerCase()} artwork ${i + 1}`}
                                             width={800}
                                             height={600}
                                             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
@@ -60,7 +60,7 @@ export default function HomePage() {
                                         />
                                         <div className="absolute inset-0 bg-black/0 transition duration-300 group-hover:bg-black/20" />
                                         <div className="absolute bottom-2 left-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-slate-800 opacity-0 transition duration-300 group-hover:opacity-100">
-                                            View {item.title}
+                                            {t('home.featured.view', { title: String(item.title) })}
                                         </div>
                                     </div>
                                 </Link>

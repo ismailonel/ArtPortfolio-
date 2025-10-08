@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useInquiry } from '@/components/InquiryContext';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useI18n } from '@/components/I18nContext';
 
 type SaleStatus = 'available' | 'sold';
 
@@ -37,6 +38,7 @@ export default function DrawingsPage() {
     const [active, setActive] = useState<number | null>(null);
     const router = useRouter();
     const { setInquiry } = useInquiry();
+    const { t } = useI18n();
 
     const goPrev = () => setActive((idx) => (idx === null ? null : (idx + images.length - 1) % images.length));
     const goNext = () => setActive((idx) => (idx === null ? null : (idx + 1) % images.length));
@@ -57,10 +59,8 @@ export default function DrawingsPage() {
         <>
             <Navbar />
             <main className="container py-10 md:py-14">
-                <h1 className="mb-6 text-3xl font-semibold md:text-4xl">Drawings</h1>
-                <p className="mb-10 max-w-2xl text-slate-600">
-                    A selection of recent drawings. Tap any image to view larger.
-                </p>
+                <h1 className="mb-6 text-3xl font-semibold md:text-4xl">{t('drawings.title')}</h1>
+                <p className="mb-10 max-w-2xl text-slate-600">{t('drawings.subtitle')}</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4">
                 {images.map((img, idx) => (
                     <button
@@ -71,7 +71,7 @@ export default function DrawingsPage() {
                         <span
                             className={`absolute left-2 top-2 z-10 rounded-full px-2.5 py-1 text-xs font-semibold shadow ${img.status === 'sold' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}
                         >
-                            {img.status === 'sold' ? 'Sold' : 'Available'}
+                            {img.status === 'sold' ? t('drawings.sold') : t('drawings.available')}
                         </span>
                         <LazyImage
                             src={img.thumb}
@@ -106,7 +106,7 @@ export default function DrawingsPage() {
                                 className="absolute right-3 top-2 z-10 rounded-full bg-white/90 px-3 py-1 text-sm text-slate-700 shadow hover:bg-white"
                                 onClick={() => setActive(null)}
                             >
-                                Close
+                                {t('drawings.close')}
                             </button>
                             <button
                                 aria-label="Previous image"
@@ -116,7 +116,7 @@ export default function DrawingsPage() {
                                 }}
                                 className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-800 shadow hover:bg-white"
                             >
-                                <span className="sr-only">Previous</span>
+                                <span className="sr-only">{t('paintings.previous')}</span>
                                 &#8592;
                             </button>
                             <button
@@ -127,7 +127,7 @@ export default function DrawingsPage() {
                                 }}
                                 className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-800 shadow hover:bg-white"
                             >
-                                <span className="sr-only">Next</span>
+                                <span className="sr-only">{t('paintings.next')}</span>
                                 &#8594;
                             </button>
                             {active !== null && (
@@ -154,13 +154,13 @@ export default function DrawingsPage() {
                                                     router.push('/contact');
                                                 }}
                                             >
-                                                Inquire
+                                                {t('drawings.inquire')}
                                             </button>
                                         )}
                                         <span
                                             className={`rounded-full px-2.5 py-1 text-xs font-semibold ${images[active].status === 'sold' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}
                                         >
-                                            {images[active].status === 'sold' ? 'Sold' : images[active].price ? `Available · ${images[active].price}` : 'Available'}
+                                            {images[active].status === 'sold' ? t('drawings.sold') : images[active].price ? t('drawings.availableWithPrice', { price: images[active].price }) : t('drawings.available')}
                                         </span>
                                     </div>
                                 </div>

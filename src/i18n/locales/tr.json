@@ -1,0 +1,75 @@
+{
+    "nav": {
+        "home": "Ana Sayfa",
+        "drawings": "Eskizler",
+        "paintings": "Resimler",
+        "about": "Hakkında",
+        "contact": "İletişim",
+        "brand1": "Sanat",
+        "brand2": "Portfolyo",
+        "language": "Dil"
+    },
+    "footer": {
+        "copyright": "© {year} Adınız · Tüm hakları saklıdır"
+    },
+    "home": {
+        "title": "Ressam ve Görsel Anlatıcı",
+        "subtitle": "Çağdaş resimler ve eskizlerle renk, doku ve duyguyu keşfetme.",
+        "viewPortfolio": "Portfolyoyu Gör",
+        "contact": "İletişim",
+        "featured": {
+            "portraits": "Portreler",
+            "stillLife": "Natürmort",
+            "landscape": "Manzara",
+            "view": "{title} Gör"
+        }
+    },
+    "paintings": {
+        "title": "Resimler",
+        "subtitle": "Son resimlerden kategoriye göre düzenlenmiş bir seçki. Büyütmek için herhangi bir görsele dokunun.",
+        "categories": {
+            "portraits": "Portreler",
+            "still-life": "Natürmort",
+            "landscape": "Manzara"
+        },
+        "sold": "Satıldı",
+        "available": "Satışta",
+        "availableWithPrice": "Satışta · {price}",
+        "inquire": "Bilgi Al",
+        "close": "Kapat",
+        "previous": "Önceki",
+        "next": "Sonraki",
+        "loading": "Yükleniyor…"
+    },
+    "drawings": {
+        "title": "Eskizler",
+        "subtitle": "Son eskizlerden bir seçki. Büyütmek için herhangi bir görsele dokunun.",
+        "sold": "Satıldı",
+        "available": "Satışta",
+        "availableWithPrice": "Satışta · {price}",
+        "inquire": "Bilgi Al",
+        "close": "Kapat"
+    },
+    "contact": {
+        "title": "İletişim",
+        "subtitle": "Sorular, siparişler veya işbirliği için aşağıdaki formu kullanarak mesaj gönderin. En kısa sürede dönüş yapacağım.",
+        "form": {
+            "name": "İsim",
+            "email": "E-posta",
+            "message": "Mesaj",
+            "send": "Mesajı Gönder",
+            "sending": "Gönderiliyor…"
+        },
+        "artworkLink": "Eser bağlantısı:",
+        "formspreeNote": "Form eylemini Formspree uç noktanızla değiştirin (örn. https://formspree.io/f/abcde).",
+        "prefilled": "Lütfen bu resim hakkında daha fazla bilgi verin."
+    },
+    "about": {
+        "title": "Hakkında",
+        "profileAlt": "Profil resmi",
+        "bio1": "[Şehriniz]'de yaşayan bir ressamım; doğadan, ışıktan ve insan duygusundan ilham alıyorum. Pratiğim renk alanlarını, dokuyu ve soyutlama ile temsili arasındaki etkileşimi araştırır.",
+        "bio2": "Eserlerim karma ve solo sergilerde yer aldı ve dünyanın dört bir yanında özel koleksiyonlarda bulunuyor. Atölye çalışmalarına liderlik etmekten ve topluluk sanat projelerinde işbirliği yapmaktan keyif alıyorum."
+    }
+}
+
+

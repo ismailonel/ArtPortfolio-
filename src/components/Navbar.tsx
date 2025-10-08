@@ -4,25 +4,28 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useI18n } from '@/components/I18nContext';
+import LanguageSelector from '@/components/LanguageSelector';
 
 const links = [
-    { href: '/', label: 'Home' },
-    { href: '/drawings', label: 'Drawings' },
-    { href: '/paintings', label: 'Paintings' },
-    { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' },
+    { href: '/', key: 'nav.home' },
+    { href: '/drawings', key: 'nav.drawings' },
+    { href: '/paintings', key: 'nav.paintings' },
+    { href: '/about', key: 'nav.about' },
+    { href: '/contact', key: 'nav.contact' },
 ];
 
 export default function Navbar() {
     const pathname = usePathname();
     const [open, setOpen] = useState(false);
+    const { t } = useI18n();
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur">
             <div className="container mx-auto flex items-center justify-between py-4">
                 <Link href="/" className="text-xl font-semibold tracking-tight">
-                    <span className="text-slate-900">Art</span>
-                    <span className="text-brand-accent">Portfolio</span>
+                    <span className="text-slate-900">{t('nav.brand1')}</span>
+                    <span className="text-brand-accent">{t('nav.brand2')}</span>
                 </Link>
 
                 <div className="hidden gap-8 md:flex">
@@ -30,7 +33,7 @@ export default function Navbar() {
                         const active = pathname === l.href;
                         return (
                             <Link key={l.href} href={l.href} className="nav-link relative">
-                                {l.label}
+                                {t(l.key)}
                                 {active && (
                                     <motion.span
                                         layoutId="activeLink"
@@ -40,6 +43,10 @@ export default function Navbar() {
                             </Link>
                         );
                     })}
+                </div>
+
+                <div className="hidden md:block">
+                    <LanguageSelector />
                 </div>
 
                 <button
@@ -74,9 +81,12 @@ export default function Navbar() {
                         <div className="container flex flex-col gap-2 pb-4">
                             {links.map((l) => (
                                 <Link key={l.href} href={l.href} className="nav-link py-2" onClick={() => setOpen(false)}>
-                                    {l.label}
+                                    {t(l.key)}
                                 </Link>
                             ))}
+                            <div className="pt-2">
+                                <LanguageSelector />
+                            </div>
                         </div>
                     </motion.div>
                 )}

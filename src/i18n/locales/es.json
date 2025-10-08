@@ -1,0 +1,75 @@
+{
+    "nav": {
+        "home": "Inicio",
+        "drawings": "Dibujos",
+        "paintings": "Pinturas",
+        "about": "Acerca de",
+        "contact": "Contacto",
+        "brand1": "Arte",
+        "brand2": "Portafolio",
+        "language": "Idioma"
+    },
+    "footer": {
+        "copyright": "© {year} Su Nombre · Todos los derechos reservados"
+    },
+    "home": {
+        "title": "Pintor y Narrador Visual",
+        "subtitle": "Explorando color, textura y emoción a través de pinturas y bocetos contemporáneos.",
+        "viewPortfolio": "Ver Portafolio",
+        "contact": "Contacto",
+        "featured": {
+            "portraits": "Retratos",
+            "stillLife": "Naturaleza Muerta",
+            "landscape": "Paisaje",
+            "view": "Ver {title}"
+        }
+    },
+    "paintings": {
+        "title": "Pinturas",
+        "subtitle": "Una selección de pinturas recientes organizadas por categoría. Toca cualquier imagen para verla en grande.",
+        "categories": {
+            "portraits": "Retratos",
+            "still-life": "Naturaleza Muerta",
+            "landscape": "Paisaje"
+        },
+        "sold": "Vendido",
+        "available": "Disponible",
+        "availableWithPrice": "Disponible · {price}",
+        "inquire": "Consultar",
+        "close": "Cerrar",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "loading": "Cargando…"
+    },
+    "drawings": {
+        "title": "Dibujos",
+        "subtitle": "Una selección de dibujos recientes. Toca cualquier imagen para verla en grande.",
+        "sold": "Vendido",
+        "available": "Disponible",
+        "availableWithPrice": "Disponible · {price}",
+        "inquire": "Consultar",
+        "close": "Cerrar"
+    },
+    "contact": {
+        "title": "Contacto",
+        "subtitle": "Para consultas, comisiones o colaboración, envíe un mensaje usando el formulario a continuación. Me pondré en contacto pronto.",
+        "form": {
+            "name": "Nombre",
+            "email": "Correo electrónico",
+            "message": "Mensaje",
+            "send": "Enviar mensaje",
+            "sending": "Enviando…"
+        },
+        "artworkLink": "Enlace de la obra:",
+        "formspreeNote": "Reemplace la acción del formulario con su endpoint de Formspree (p. ej., https://formspree.io/f/abcde).",
+        "prefilled": "Por favor, proporcione más información sobre esta pintura."
+    },
+    "about": {
+        "title": "Acerca de",
+        "profileAlt": "Foto de perfil",
+        "bio1": "Soy un pintor con sede en [Su Ciudad], inspirado por la naturaleza, la luz y la emoción humana. Mi práctica explora campos de color, textura y la interacción entre la abstracción y la representación.",
+        "bio2": "Mi obra se ha exhibido en muestras colectivas e individuales y forma parte de colecciones privadas en todo el mundo. Cuando no estoy en el estudio, disfruto impartiendo talleres y colaborando en proyectos artísticos comunitarios."
+    }
+}
+
+

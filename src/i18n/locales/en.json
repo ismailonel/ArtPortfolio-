@@ -1,0 +1,75 @@
+{
+    "nav": {
+        "home": "Home",
+        "drawings": "Drawings",
+        "paintings": "Paintings",
+        "about": "About",
+        "contact": "Contact",
+        "brand1": "Art",
+        "brand2": "Portfolio",
+        "language": "Language"
+    },
+    "footer": {
+        "copyright": "© {year} Your Name · All rights reserved"
+    },
+    "home": {
+        "title": "Painter & Visual Storyteller",
+        "subtitle": "Exploring color, texture, and emotion through contemporary paintings and sketches.",
+        "viewPortfolio": "View Portfolio",
+        "contact": "Contact",
+        "featured": {
+            "portraits": "Portraits",
+            "stillLife": "Still Life",
+            "landscape": "Landscape",
+            "view": "View {title}"
+        }
+    },
+    "paintings": {
+        "title": "Paintings",
+        "subtitle": "A selection of recent paintings organized by category. Tap any image to view larger.",
+        "categories": {
+            "portraits": "Portraits",
+            "still-life": "Still Life",
+            "landscape": "Landscape"
+        },
+        "sold": "Sold",
+        "available": "Available",
+        "availableWithPrice": "Available · {price}",
+        "inquire": "Inquire",
+        "close": "Close",
+        "previous": "Previous",
+        "next": "Next",
+        "loading": "Loading…"
+    },
+    "drawings": {
+        "title": "Drawings",
+        "subtitle": "A selection of recent drawings. Tap any image to view larger.",
+        "sold": "Sold",
+        "available": "Available",
+        "availableWithPrice": "Available · {price}",
+        "inquire": "Inquire",
+        "close": "Close"
+    },
+    "contact": {
+        "title": "Contact",
+        "subtitle": "For inquiries, commissions, or collaboration, send a message using the form below. I will get back to you soon.",
+        "form": {
+            "name": "Name",
+            "email": "Email",
+            "message": "Message",
+            "send": "Send Message",
+            "sending": "Sending…"
+        },
+        "artworkLink": "Artwork link:",
+        "formspreeNote": "Replace the form action with your Formspree endpoint (e.g. https://formspree.io/f/abcde).",
+        "prefilled": "Please give me more information about this painting."
+    },
+    "about": {
+        "title": "About",
+        "profileAlt": "Profile picture",
+        "bio1": "I am a painter based in [Your City], inspired by nature, light, and human emotion. My practice explores color fields, texture, and the interplay between abstraction and representation.",
+        "bio2": "My work has been exhibited in group and solo shows and is held in private collections worldwide. When not in the studio, I enjoy teaching workshops and collaborating on community art projects."
+    }
+}
+
+

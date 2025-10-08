@@ -8,6 +8,7 @@ import { Suspense, useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInquiry } from '@/components/InquiryContext';
+import { useI18n } from '@/components/I18nContext';
 
 type SaleStatus = 'available' | 'sold';
 
@@ -24,7 +25,7 @@ type Category = 'portraits' | 'still-life' | 'landscape';
 
 const categories = {
     portraits: {
-        title: 'Portraits',
+        title: 'paintings.categories.portraits',
         images: [
             {
                 thumb: '/images/paintings/portraits/thumbs/work-1thumb.svg',
@@ -44,7 +45,7 @@ const categories = {
         ]
     },
     'still-life': {
-        title: 'Still Life',
+        title: 'paintings.categories.still-life',
         images: [
             {
                 thumb: '/images/paintings/still-life/thumbs/work-3thumb.svg',
@@ -65,7 +66,7 @@ const categories = {
         ]
     },
     landscape: {
-        title: 'Landscape',
+        title: 'paintings.categories.landscape',
         images: [
             {
                 thumb: '/images/paintings/landscape/thumbs/work-5thumb.svg',
@@ -90,6 +91,7 @@ function PaintingsContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { setInquiry } = useInquiry();
+    const { t } = useI18n();
     const categoryParam = searchParams.get('category') as Category;
     const [activeCategory, setActiveCategory] = useState<Category>(
         categoryParam && Object.keys(categories).includes(categoryParam) ? categoryParam : 'portraits'
@@ -133,10 +135,8 @@ function PaintingsContent() {
 
     return (
         <>
-            <h1 className="mb-6 text-3xl font-semibold md:text-4xl">Paintings</h1>
-            <p className="mb-10 max-w-2xl text-slate-600">
-                A selection of recent paintings organized by category. Tap any image to view larger.
-            </p>
+            <h1 className="mb-6 text-3xl font-semibold md:text-4xl">{t('paintings.title')}</h1>
+            <p className="mb-10 max-w-2xl text-slate-600">{t('paintings.subtitle')}</p>
             
             {/* Category Tabs */}
             <div className="mb-8 flex flex-wrap gap-2">
@@ -150,13 +150,13 @@ function PaintingsContent() {
                                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                         }`}
                     >
-                        {category.title}
+                        {t(category.title as string)}
                     </button>
                 ))}
             </div>
 
             {/* Category Title */}
-            <h2 className="mb-6 text-2xl font-semibold">{categories[activeCategory].title}</h2>
+            <h2 className="mb-6 text-2xl font-semibold">{t(categories[activeCategory].title)}</h2>
 
             {/* Images Grid */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4">
@@ -169,7 +169,7 @@ function PaintingsContent() {
                         <span
                             className={`absolute left-2 top-2 z-10 rounded-full px-2.5 py-1 text-xs font-semibold shadow ${img.status === 'sold' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'}`}
                         >
-                            {img.status === 'sold' ? 'Sold' : 'Available'}
+                            {img.status === 'sold' ? t('paintings.sold') : t('paintings.available')}
                         </span>
                         <LazyImage
                             src={img.thumb}
@@ -204,7 +204,7 @@ function PaintingsContent() {
                                 className="absolute right-3 top-2 z-10 rounded-full bg-white/90 px-3 py-1 text-sm text-slate-700 shadow hover:bg-white"
                                 onClick={() => setActiveImage(null)}
                             >
-                                Close
+                                {t('paintings.close')}
                             </button>
                             <button
                                 aria-label="Previous image"
@@ -214,7 +214,7 @@ function PaintingsContent() {
                                 }}
                                 className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-800 shadow hover:bg-white"
                             >
-                                <span className="sr-only">Previous</span>
+                                <span className="sr-only">{t('paintings.previous')}</span>
                                 &#8592;
                             </button>
                             <button
@@ -225,7 +225,7 @@ function PaintingsContent() {
                                 }}
                                 className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-800 shadow hover:bg-white"
                             >
-                                <span className="sr-only">Next</span>
+                                <span className="sr-only">{t('paintings.next')}</span>
                                 &#8594;
                             </button>
                             {activeImage !== null && (
@@ -254,7 +254,7 @@ function PaintingsContent() {
                                                     router.push('/contact');
                                                 }}
                                             >
-                                                Inquire
+                                                {t('paintings.inquire')}
                                             </button>
                                         )}
                                         <span
@@ -265,10 +265,10 @@ function PaintingsContent() {
                                             }`}
                                         >
                                             {categories[activeImage.category].images[activeImage.index].status === 'sold' 
-                                                ? 'Sold' 
+                                                ? t('paintings.sold') 
                                                 : categories[activeImage.category].images[activeImage.index].price 
-                                                    ? `Available · ${categories[activeImage.category].images[activeImage.index].price}` 
-                                                    : 'Available'
+                                                    ? t('paintings.availableWithPrice', { price: categories[activeImage.category].images[activeImage.index].price as string }) 
+                                                    : t('paintings.available')
                                             }
                                         </span>
                                     </div>

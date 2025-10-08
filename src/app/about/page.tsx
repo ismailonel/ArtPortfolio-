@@ -1,8 +1,12 @@
+"use client";
+
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { useI18n } from '@/components/I18nContext';
 
 export default function AboutPage() {
+    const { t } = useI18n();
     return (
         <>
             <Navbar />
@@ -11,7 +15,7 @@ export default function AboutPage() {
                     <div className="overflow-hidden rounded-2xl border border-slate-200">
                         <Image
                             src="/images/profile.svg"
-                            alt="Profile picture"
+                            alt={t('about.profileAlt')}
                             width={600}
                             height={600}
                             className="h-auto w-full object-cover"
@@ -19,17 +23,9 @@ export default function AboutPage() {
                         />
                     </div>
                     <div className="container-prose">
-                        <h1>About</h1>
-                        <p>
-                            I am a painter based in [Your City], inspired by nature, light, and human
-                            emotion. My practice explores color fields, texture, and the interplay between
-                            abstraction and representation.
-                        </p>
-                        <p>
-                            My work has been exhibited in group and solo shows and is held in private
-                            collections worldwide. When not in the studio, I enjoy teaching workshops and
-                            collaborating on community art projects.
-                        </p>
+                        <h1>{t('about.title')}</h1>
+                        <p>{t('about.bio1')}</p>
+                        <p>{t('about.bio2')}</p>
                     </div>
                 </div>
             </main>
