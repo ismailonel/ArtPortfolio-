@@ -2,14 +2,23 @@
 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useInquiry } from '@/components/InquiryContext';
 import { useI18n } from '@/components/I18nContext';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 export default function ContactPage() {
     const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
     const { inquiry, clearInquiry } = useInquiry();
     const { t } = useI18n();
+    const formRef = useRef<HTMLFormElement | null>(null);
+    const hcaptchaRef = useRef<any>(null);
+
+    const FORMSPARK_FORM_ID = process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID;
+    const formsparkAction = FORMSPARK_FORM_ID
+        ? (FORMSPARK_FORM_ID.startsWith('http') ? FORMSPARK_FORM_ID : `https://submit-form.com/${FORMSPARK_FORM_ID}`)
+        : '';
+    const HCAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || '';
 
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const initialFullUrl = inquiry.imageUrl
@@ -30,6 +39,27 @@ export default function ContactPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        if (!formsparkAction || !HCAPTCHA_SITE_KEY) {
+            setStatus('error');
+            return;
+        }
+        setStatus('submitting');
+        try {
+            const token = await hcaptchaRef.current?.execute({ async: true });
+            if (!token || !formRef.current) throw new Error('hcaptcha');
+            const fd = new FormData(formRef.current);
+            fd.append('h-captcha-response', token);
+            const res = await fetch(formsparkAction, { method: 'POST', body: fd });
+            setStatus(res.ok ? 'success' : 'error');
+        } catch {
+            setStatus('error');
+        } finally {
+            try { hcaptchaRef.current?.resetCaptcha(); } catch {}
+        }
+    }
+
     return (
         <>
             <Navbar />
@@ -37,10 +67,11 @@ export default function ContactPage() {
                 <h1 className="mb-6 text-3xl font-semibold md:text-4xl">{t('contact.title')}</h1>
                 <p className="mb-8 max-w-2xl text-slate-600">{t('contact.subtitle')}</p>
                 <form
-                    action="https://formspree.io/f/yourFormId"
+                    action={formsparkAction || undefined}
                     method="POST"
                     className="max-w-xl space-y-4"
-                    onSubmit={() => setStatus('submitting')}
+                    ref={formRef}
+                    onSubmit={handleSubmit}
                 >
                     <div>
                         <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700">{t('contact.form.name')}</label>
@@ -81,6 +112,14 @@ export default function ContactPage() {
                             defaultValue={inquiry.imageUrl ? t('contact.prefilled') : undefined}
                         />
                     </div>
+                    {HCAPTCHA_SITE_KEY ? (
+                        <HCaptcha
+                            sitekey={HCAPTCHA_SITE_KEY}
+                            size="invisible"
+                            ref={hcaptchaRef}
+                            onError={() => setStatus('error')}
+                        />
+                    ) : null}
                     <input type="text" name="_gotcha" className="hidden" />
                     <button className="btn-primary" type="submit" disabled={status === 'submitting'}>
                         {status === 'submitting' ? t('contact.form.sending') : t('contact.form.send')}
