@@ -15,10 +15,12 @@ export default function ContactPage() {
     const hcaptchaRef = useRef<any>(null);
 
     const FORMSPARK_FORM_ID = process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID;
+    // Fallbacks only in development to ease local testing; prod must use envs
+    const isDev = typeof window !== 'undefined' && process.env.NODE_ENV !== 'production';
     const formsparkAction = FORMSPARK_FORM_ID
         ? (FORMSPARK_FORM_ID.startsWith('http') ? FORMSPARK_FORM_ID : `https://submit-form.com/${FORMSPARK_FORM_ID}`)
-        : '';
-    const HCAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || '';
+        : (isDev ? 'https://submit-form.com/FqnSFus0g' : '');
+    const HCAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || (isDev ? '877e3a7c-8834-489c-8e64-c30cd0d2b83a' : '');
 
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const initialFullUrl = inquiry.imageUrl
@@ -51,7 +53,11 @@ export default function ContactPage() {
             if (!token || !formRef.current) throw new Error('hcaptcha');
             const fd = new FormData(formRef.current);
             fd.append('h-captcha-response', token);
-            const res = await fetch(formsparkAction, { method: 'POST', body: fd });
+            const res = await fetch(formsparkAction, {
+                method: 'POST',
+                body: fd,
+                headers: { 'Accept': 'application/json' }
+            });
             setStatus(res.ok ? 'success' : 'error');
         } catch {
             setStatus('error');
@@ -115,7 +121,7 @@ export default function ContactPage() {
                     {HCAPTCHA_SITE_KEY ? (
                         <HCaptcha
                             sitekey={HCAPTCHA_SITE_KEY}
-                            size="invisible"
+                            size="normal"
                             ref={hcaptchaRef}
                             onError={() => setStatus('error')}
                         />
