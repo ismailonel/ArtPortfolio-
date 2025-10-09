@@ -63,7 +63,7 @@
             "error": "Hubo un problema al enviar su mensaje. Por favor, inténtelo de nuevo.",
             "validation": {
                 "required": "Por favor complete este campo.",
-                "email": "Por favor incluya un @ en la dirección de correo.",
+                    "email": "Por favor, introduzca una dirección de correo electrónico válida.",
                 "recaptcha": "Por favor confirme que no es un robot."
             }
         },

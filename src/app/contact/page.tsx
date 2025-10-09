@@ -49,6 +49,13 @@ export default function ContactPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    function isValidEmail(value: string): boolean {
+        const email = value.trim();
+        // Basic email pattern: some@domain.tld (TLD length >= 2)
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        return re.test(email);
+    }
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         // Pre-validate with localized messages before proceeding
@@ -110,9 +117,12 @@ export default function ContactPage() {
             el.setCustomValidity(t('contact.form.validation.required'));
             return;
         }
-        if ((el as HTMLInputElement).type === 'email' && (el as HTMLInputElement).validity.typeMismatch) {
-            el.setCustomValidity(t('contact.form.validation.email'));
-            return;
+        if ((el as HTMLInputElement).type === 'email') {
+            const emailValue = (el as HTMLInputElement).value || '';
+            if (!isValidEmail(emailValue)) {
+                el.setCustomValidity(t('contact.form.validation.email'));
+                return;
+            }
         }
         el.setCustomValidity('');
     }

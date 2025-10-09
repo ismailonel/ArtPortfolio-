@@ -63,7 +63,7 @@
             "error": "There was a problem sending your message. Please try again.",
             "validation": {
                 "required": "Please fill out this field.",
-                "email": "Please include an @ in the email address.",
+                    "email": "Please enter a valid email address.",
                 "recaptcha": "Please verify that you are not a robot."
             }
         },

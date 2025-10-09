@@ -63,7 +63,7 @@
             "error": "Mesajınız gönderilirken bir sorun oluştu. Lütfen tekrar deneyin.",
             "validation": {
                 "required": "Lütfen bu alanı doldurun.",
-                "email": "Lütfen e‑posta adresine '@' işaretini ekleyin.",
+                    "email": "Lütfen geçerli bir e‑posta adresi girin.",
                 "recaptcha": "Lütfen reCAPTCHA doğrulamasını tamamlayın."
             }
         },
