@@ -60,7 +60,12 @@
             "send": "Send Message",
             "sending": "Sending…",
             "success": "Message sent successfully. Thank you!",
-            "error": "There was a problem sending your message. Please try again."
+            "error": "There was a problem sending your message. Please try again.",
+            "validation": {
+                "required": "Please fill out this field.",
+                "email": "Please include an @ in the email address.",
+                "recaptcha": "Please verify that you are not a robot."
+            }
         },
         "artworkLink": "Artwork link:",
         "prefilled": "Please give me more information about this painting."

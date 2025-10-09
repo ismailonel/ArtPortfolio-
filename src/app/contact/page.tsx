@@ -14,15 +14,18 @@ export default function ContactPage() {
     const formRef = useRef<HTMLFormElement | null>(null);
     const recaptchaRef = useRef<ReCAPTCHA | null>(null);
     const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [recaptchaError, setRecaptchaError] = useState<string | null>(null);
 
     const FORMSPARK_FORM_ID = process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID;
     // Fallbacks only in development to ease local testing; prod must use envs
     const isDev = typeof window !== 'undefined' && process.env.NODE_ENV !== 'production';
+    const isLocalhost = typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
     const formsparkAction = FORMSPARK_FORM_ID
         ? (FORMSPARK_FORM_ID.startsWith('http') ? FORMSPARK_FORM_ID : `https://submit-form.com/${FORMSPARK_FORM_ID}`)
         : (isDev ? 'https://submit-form.com/FqnSFus0g' : '');
     const internalAction = '/api/contact';
-    const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || (isDev ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : '');
+    const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ((isDev || isLocalhost) ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : '');
 
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const initialFullUrl = inquiry.imageUrl
@@ -48,8 +51,27 @@ export default function ContactPage() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        // Pre-validate with localized messages before proceeding
+        if (formRef.current) {
+            const nameEl = formRef.current.querySelector('#name') as HTMLInputElement | null;
+            const emailEl = formRef.current.querySelector('#email') as HTMLInputElement | null;
+            const messageEl = formRef.current.querySelector('#message') as HTMLTextAreaElement | null;
+            if (nameEl) setLocalizedValidity(nameEl);
+            if (emailEl) setLocalizedValidity(emailEl);
+            if (messageEl) setLocalizedValidity(messageEl);
+            if (!formRef.current.checkValidity()) {
+                try { formRef.current.reportValidity(); } catch {}
+                return;
+            }
+        }
         if (!formsparkAction) {
             setStatus('error');
+            return;
+        }
+        // If reCAPTCHA is enabled but not completed, surface a clear localized message
+        if (RECAPTCHA_SITE_KEY && !recaptchaToken) {
+            setRecaptchaError(t('contact.form.validation.recaptcha'));
+            try { recaptchaRef.current?.execute(); } catch {}
             return;
         }
         setStatus('submitting');
@@ -66,9 +88,12 @@ export default function ContactPage() {
             });
             if (res.ok) {
                 setStatus('success');
+                setErrorMessage(null);
                 try { formRef.current.reset(); } catch {}
             } else {
                 setStatus('error');
+                // Fall back to the generic error copy
+                setErrorMessage(null);
             }
             if (!res.ok) {
                 try { console.error('Formspark error', await res.text()); } catch {}
@@ -79,6 +104,35 @@ export default function ContactPage() {
             try { recaptchaRef.current?.reset(); setRecaptchaToken(null); } catch {}
         }
     }
+
+    function setLocalizedValidity(el: HTMLInputElement | HTMLTextAreaElement) {
+        if (el.validity.valueMissing) {
+            el.setCustomValidity(t('contact.form.validation.required'));
+            return;
+        }
+        if ((el as HTMLInputElement).type === 'email' && (el as HTMLInputElement).validity.typeMismatch) {
+            el.setCustomValidity(t('contact.form.validation.email'));
+            return;
+        }
+        el.setCustomValidity('');
+    }
+
+    const handleInvalid: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
+        const target = e.currentTarget;
+        setLocalizedValidity(target);
+        // Ensure the custom message is shown instead of UA default
+        try { e.preventDefault(); target.reportValidity(); } catch {}
+    };
+
+    const handleInput: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
+        const target = e.currentTarget;
+        // Continuously keep custom messages localized while typing
+        setLocalizedValidity(target);
+        // If a bubble is already showing, ensure it updates to the localized text
+        if (!target.checkValidity()) {
+            try { target.reportValidity(); } catch {}
+        }
+    };
 
     return (
         <>
@@ -101,6 +155,8 @@ export default function ContactPage() {
                             type="text"
                             required
                             className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-500/40"
+                            onInvalid={handleInvalid}
+                            onInput={handleInput}
                         />
                     </div>
                     <div>
@@ -111,6 +167,8 @@ export default function ContactPage() {
                             type="email"
                             required
                             className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-500/40"
+                            onInvalid={handleInvalid}
+                            onInput={handleInput}
                         />
                     </div>
                     <div>
@@ -122,15 +180,20 @@ export default function ContactPage() {
                             required
                             className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-500/40"
                             defaultValue={messageWithArtwork}
+                            onInvalid={handleInvalid}
+                            onInput={handleInput}
                         />
                     </div>
                     {RECAPTCHA_SITE_KEY ? (
                         <ReCAPTCHA
                             sitekey={RECAPTCHA_SITE_KEY}
-                            onChange={(val: string | null) => setRecaptchaToken(val)}
+                            onChange={(val: string | null) => { setRecaptchaToken(val); if (val) { setErrorMessage(null); setRecaptchaError(null); } }}
                             ref={recaptchaRef}
                         />
                     ) : null}
+                    {recaptchaError && (
+                        <p className="mt-2 text-sm text-rose-600">{recaptchaError}</p>
+                    )}
                     <input type="text" name="_gotcha" className="hidden" />
                     <button className="btn-primary" type="submit" disabled={status === 'submitting' || status === 'success'}>
                         {status === 'submitting' ? t('contact.form.sending') : (status === 'success' ? 'Sent' : t('contact.form.send'))}
@@ -140,7 +203,7 @@ export default function ContactPage() {
                     <p className="mt-4 text-sm text-emerald-600">{t('contact.form.success')}</p>
                 )}
                 {status === 'error' && (
-                    <p className="mt-4 text-sm text-rose-600">{t('contact.form.error')}</p>
+                    <p className="mt-4 text-sm text-rose-600">{errorMessage ?? t('contact.form.error')}</p>
                 )}
             </main>
             <Footer />

@@ -60,7 +60,12 @@
             "send": "Enviar mensaje",
             "sending": "Enviando…",
             "success": "Mensaje enviado exitosamente. ¡Gracias!",
-            "error": "Hubo un problema al enviar su mensaje. Por favor, inténtelo de nuevo."
+            "error": "Hubo un problema al enviar su mensaje. Por favor, inténtelo de nuevo.",
+            "validation": {
+                "required": "Por favor complete este campo.",
+                "email": "Por favor incluya un @ en la dirección de correo.",
+                "recaptcha": "Por favor confirme que no es un robot."
+            }
         },
         "artworkLink": "Enlace de la obra:",
         "prefilled": "Por favor, proporcione más información sobre esta pintura."

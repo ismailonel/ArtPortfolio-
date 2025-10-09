@@ -60,7 +60,12 @@
             "send": "Mesajı Gönder",
             "sending": "Gönderiliyor…",
             "success": "Mesajınız başarıyla gönderildi. Teşekkürler!",
-            "error": "Mesajınız gönderilirken bir sorun oluştu. Lütfen tekrar deneyin."
+            "error": "Mesajınız gönderilirken bir sorun oluştu. Lütfen tekrar deneyin.",
+            "validation": {
+                "required": "Lütfen bu alanı doldurun.",
+                "email": "Lütfen e‑posta adresine '@' işaretini ekleyin.",
+                "recaptcha": "Lütfen reCAPTCHA doğrulamasını tamamlayın."
+            }
         },
         "artworkLink": "Eser bağlantısı:",
         "prefilled": "Lütfen bu resim hakkında daha fazla bilgi verin."
